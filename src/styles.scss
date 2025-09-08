@@ -1,0 +1,37 @@
+/* Global Styles */
+html, body { 
+  height: 100%; 
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+body { 
+  font-family: 'Inter', sans-serif;
+  background: #0a0a1a;
+  color: #ffffff;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #00ffff, #0099cc);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #00d4ff, #007aa3);
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 255, 255, 0.3);
+  color: white;
+}

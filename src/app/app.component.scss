@@ -1,0 +1,42 @@
+// Matrix Effect Styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  overflow: hidden;
+}
+
+.matrix-container {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  overflow: hidden;
+  position: relative;
+  
+  .matrix-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: #000;
+  }
+}
+
+// Hide scrollbars
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+// Selection
+::selection {
+  background: rgba(0, 255, 100, 0.3);
+  color: white;
+}
