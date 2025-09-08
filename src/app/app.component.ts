@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 interface DataColumn {
   x: number;
@@ -25,16 +26,53 @@ interface DataColumn {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="matrix-container">
       <canvas class="matrix-canvas"></canvas>
+      
+      <!-- Login Form Overlay -->
+      <div class="login-overlay">
+        <div class="login-form">
+          <div class="form-header">
+            <h2>MATRIX ACCESS</h2>
+            <p>Enter security code to proceed</p>
+          </div>
+          
+          <div class="input-group">
+            <input 
+              type="password" 
+              placeholder="Security Code" 
+              [(ngModel)]="securityCode"
+              (keyup.enter)="authenticate()"
+              class="security-input"
+              autocomplete="off"
+            />
+          </div>
+          
+          <button 
+            class="liquid-glass-button" 
+            (click)="authenticate()"
+            [disabled]="!securityCode"
+          >
+            <span class="button-text">ENTER MATRIX</span>
+            <div class="liquid-effect"></div>
+          </button>
+          
+          <div class="form-footer">
+            <small>Authorized personnel only</small>
+          </div>
+        </div>
+      </div>
     </div>
   `,
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'data-flow-landing';
+  securityCode: string = '';
+  isAuthenticated: boolean = false;
+  
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   private columns: DataColumn[] = [];
@@ -87,6 +125,33 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
+    }
+  }
+
+  authenticate() {
+    // Simple demo authentication - in real app would be more secure
+    if (this.securityCode.toLowerCase() === 'matrix' || 
+        this.securityCode === '2077' || 
+        this.securityCode.toLowerCase() === 'neo') {
+      this.isAuthenticated = true;
+      // Hide the form with animation
+      const overlay = document.querySelector('.login-overlay') as HTMLElement;
+      if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.style.display = 'none';
+        }, 500);
+      }
+    } else {
+      // Show error effect
+      const input = document.querySelector('.security-input') as HTMLElement;
+      if (input) {
+        input.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+          input.style.animation = '';
+        }, 500);
+      }
+      this.securityCode = '';
     }
   }
 
