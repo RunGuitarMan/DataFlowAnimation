@@ -182,9 +182,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private createDataColumns() {
     this.columns = [];
-    const baseColumnWidth = 20; // Wider spacing to prevent overlap
+    const baseColumnWidth = 35; // Much wider spacing for better performance
     const columnsPerRow = Math.floor(this.canvas.width / baseColumnWidth);
-    const totalColumns = columnsPerRow * 4; // More columns for better density
+    const totalColumns = columnsPerRow * 2; // Much fewer columns for maximum performance
     
     // Create more columns distributed across entire depth field
     for (let i = 0; i < totalColumns; i++) {
@@ -197,10 +197,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private createColumn(x: number): DataColumn {
-    const charactersPerColumn = 12 + Math.floor(Math.random() * 8); // 12-20 characters (reduced)
+    const charactersPerColumn = 20 + Math.floor(Math.random() * 10); // 20-30 characters (optimized length)
     const characters = [];
     const now = Date.now();
-    const startDelay = Math.random() * 5000; // Stagger column starts
+    const startDelay = Math.random() * 2000; // Faster start
     
     for (let i = 0; i < charactersPerColumn; i++) {
       const irregularSpacing = 25 + Math.random() * 15; // 25-40px spacing for better spread
@@ -226,11 +226,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       fontSize: 13 + Math.random() * 4 // More font size variation
     };
     
-    // Random chance to have a meaningful word (less frequent)
-    if (Math.random() < 0.15) {
+    // Very rare chance to have a meaningful word (minimal for performance)
+    if (Math.random() < 0.02) {
       setTimeout(() => {
         this.assignWordToColumn(column);
-      }, Math.random() * 3000); // Delayed word assignment
+      }, Math.random() * 8000); // Much longer delayed word assignment
     }
     
     return column;
@@ -246,24 +246,24 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     column.currentWord = undefined;
     column.wordStartIndex = undefined;
     
-    // Regenerate all characters
+    // Regenerate all characters (simplified for performance)
     column.characters.forEach(char => {
       char.y = Math.random() * this.canvas.height; // Full screen distribution
-      char.alpha = Math.random() * 0.8 + 0.2; // Immediate visibility
+      char.alpha = 0.4 + Math.random() * 0.4; // Simplified alpha
       char.hue = Math.random() * 60 + 120; // Green spectrum
-      char.isActive = Math.random() < 0.25;
+      char.isActive = Math.random() < 0.15; // Very few active for performance
       char.char = this.getRandomChar();
-      char.lastChange = now + Math.random() * 1000; // Staggered changes
-      char.changeInterval = 500 + Math.random() * 1000;
+      char.lastChange = now + Math.random() * 3000; // Much longer stagger
+      char.changeInterval = 3000 + Math.random() * 4000; // Very slow changes
       char.isPartOfWord = false;
       char.wordIndex = undefined;
     });
     
-    // Random chance for meaningful word
-    if (Math.random() < 0.15) {
+    // Very rare chance for meaningful word (minimal for performance)
+    if (Math.random() < 0.01) {
       setTimeout(() => {
         this.assignWordToColumn(column);
-      }, Math.random() * 2000);
+      }, Math.random() * 6000);
     }
   }
 
@@ -298,12 +298,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const now = Date.now();
     
     // Move camera forward through the data at constant speed
-    this.cameraZ += 2.5; // Steady forward movement
+    this.cameraZ += 4.0; // Faster forward movement for smoother effect
     
     this.columns.forEach(column => {
       // Move column towards camera at same speed as camera to maintain relative position
       // This creates the illusion of infinite depth
-      column.z -= 2.5; // Same speed as camera movement
+      column.z -= 4.0; // Same speed as camera movement
       
       // Regenerate columns that pass behind camera to maintain infinite effect
       if (column.z < this.cameraZ - 100) { // Move behind camera with some buffer
@@ -314,37 +314,34 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.regenerateColumn(column);
       }
       
-      // Update character positions and morphing
+      // Update character positions and morphing (simplified for performance)
       column.characters.forEach((char, index) => {
         char.y += column.speed;
         
-        // Cycle colors smoothly
-        char.hue = (char.hue + 0.2) % 360;
+        // Much slower color cycling for performance
+        if (now % 3 === 0) { // Only update every 3rd frame
+          char.hue = (char.hue + 0.1) % 360;
+        }
         
-        // Character morphing for non-word characters (slower and less frequent)
+        // Character morphing for non-word characters (very slow for performance)
         if (!char.isPartOfWord && now - char.lastChange > char.changeInterval) {
           char.char = this.getRandomChar();
           char.lastChange = now;
-          char.changeInterval = 500 + Math.random() * 1000; // Slower morphing
+          char.changeInterval = 2000 + Math.random() * 3000; // Very slow morphing
           
-          // Sometimes become active when changing
-          if (Math.random() < 0.3) {
+          // Less frequent activation changes
+          if (Math.random() < 0.1) {
             char.isActive = !char.isActive;
           }
         }
         
-        // Calculate alpha based on position and activity
+        // Simplified alpha calculation for performance
         const screenPosition = char.y / this.canvas.height;
+        char.alpha = char.isActive ? 
+          Math.max(0.6, 1 - screenPosition * 0.4) : 
+          Math.max(0.3, (1 - screenPosition * 0.4) * 0.6);
         
-        if (char.isActive) {
-          // Active characters are always bright
-          char.alpha = Math.max(0.7, 1 - screenPosition * 0.5);
-        } else {
-          // Inactive characters are still visible
-          char.alpha = Math.max(0.4, (1 - screenPosition * 0.5) * 0.7);
-        }
-        
-        // Reset character if it goes off screen - cycle back to top
+        // Reset character if it goes off screen - cycle back to top (simplified)
         if (char.y > this.canvas.height + 50) {
           char.y = -Math.random() * 50; // Start just above screen
           
@@ -353,18 +350,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           char.wordIndex = undefined;
           
           char.char = this.getRandomChar();
-          char.hue = Math.random() * 60 + (120 + Math.sin(now * 0.001) * 60);
-          char.isActive = Math.random() < 0.4;
-          char.alpha = Math.random() * 0.8 + 0.2; // Ensure visibility
-          char.lastChange = now + Math.random() * 1000; // Stagger resets
-          char.changeInterval = 500 + Math.random() * 1000; // Consistent slower intervals
+          char.hue = Math.random() * 60 + 120; // Simplified hue calculation
+          char.isActive = Math.random() < 0.3; // Less active for performance
+          char.alpha = 0.5 + Math.random() * 0.3; // Simplified alpha
+          char.lastChange = now + Math.random() * 2000; // Longer stagger
+          char.changeInterval = 2000 + Math.random() * 3000; // Much slower intervals
         }
       });
       
-      // Less frequent and more irregular character activation
-      if (now - column.lastUpdate > 800 + Math.random() * 1200) { // Slower activation changes
+      // Very infrequent character activation for maximum performance
+      if (now - column.lastUpdate > 5000 + Math.random() * 5000) { // Very slow activation changes
         const randomChar = column.characters[Math.floor(Math.random() * column.characters.length)];
-        if (!randomChar.isPartOfWord && Math.random() < 0.7) { // More selective activation
+        if (!randomChar.isPartOfWord && Math.random() < 0.3) { // Very selective activation
           randomChar.isActive = !randomChar.isActive;
         }
         column.lastUpdate = now;
@@ -378,39 +375,41 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           column.currentWord = undefined;
           column.wordStartIndex = undefined;
           
-          // 15% chance to assign a new word
-          if (Math.random() < 0.15) {
+          // 5% chance to assign a new word (much less frequent)
+          if (Math.random() < 0.05) {
             this.assignWordToColumn(column);
           }
         }
       } else {
-        // No current word, less frequent word assignment
-        if (Math.random() < 0.05) { // Reduced from 0.1 to 0.05
+        // No current word, very rare word assignment for performance
+        if (Math.random() < 0.005) { // Very rare for maximum performance
           this.assignWordToColumn(column);
         }
       }
     });
     
-    // Mouse interaction - activate nearby characters (accounting for perspective)
-    this.columns.forEach(column => {
-      const perspective = 800;
-      const distance = column.z - this.cameraZ;
-      
-      if (distance > 0 && distance <= this.maxDepth + this.regenerationBuffer) {
-        const scale = perspective / distance;
-        const perspectiveX = (column.x - this.canvas.width / 2) * scale + this.canvas.width / 2;
+    // Mouse interaction - activate nearby characters (simplified for performance)
+    if (now % 2 === 0) { // Only check every 2nd frame for performance
+      this.columns.forEach(column => {
+        const perspective = 800;
+        const distance = column.z - this.cameraZ;
         
-        if (Math.abs(perspectiveX - this.mouse.x) < 50 * scale) {
-          column.characters.forEach(char => {
-            const perspectiveY = (char.y - this.canvas.height / 2) * scale + this.canvas.height / 2;
-            if (Math.abs(perspectiveY - this.mouse.y) < 100 * scale) {
-              char.isActive = true;
-              char.hue = (char.hue + 5) % 360;
-            }
-          });
+        if (distance > 0 && distance <= this.maxDepth + this.regenerationBuffer) {
+          const scale = perspective / distance;
+          const perspectiveX = (column.x - this.canvas.width / 2) * scale + this.canvas.width / 2;
+          
+          if (Math.abs(perspectiveX - this.mouse.x) < 60 * scale) {
+            column.characters.forEach(char => {
+              const perspectiveY = (char.y - this.canvas.height / 2) * scale + this.canvas.height / 2;
+              if (Math.abs(perspectiveY - this.mouse.y) < 120 * scale) {
+                char.isActive = true;
+                char.hue = (char.hue + 3) % 360; // Slower hue change
+              }
+            });
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   private drawDataColumns() {
@@ -432,27 +431,26 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       const scale = perspective / distance;
       const perspectiveX = (column.x - this.canvas.width / 2) * scale + this.canvas.width / 2;
       
-      // Improved depth-based alpha - smoother fade with distance
-      const normalizedDistance = distance / this.maxDepth;
-      const depthAlpha = Math.max(0.15, 1 - normalizedDistance * 0.7); // Smoother fade
-      const scaledFontSize = Math.max(6, column.fontSize * scale);
+      // Simplified depth-based alpha for performance
+      const depthAlpha = Math.max(0.2, 1 - (distance / this.maxDepth) * 0.6);
+      const scaledFontSize = Math.max(8, column.fontSize * scale);
       
       this.ctx.font = `${scaledFontSize}px "Monaco", "Menlo", "Ubuntu Mono", monospace`;
       
       column.characters.forEach(char => {
         const combinedAlpha = char.alpha * depthAlpha;
         
-        if (combinedAlpha > 0.01) { // Draw more characters
+        if (combinedAlpha > 0.1) { // Higher threshold for performance
           const perspectiveY = (char.y - this.canvas.height / 2) * scale + this.canvas.height / 2;
           
-          const hue = char.hue;
-          const saturation = char.isActive ? 80 : 50;
-          const lightness = char.isActive ? 75 : 60;
+          // Skip if character is off screen
+          if (perspectiveY < -30 || perspectiveY > this.canvas.height + 30) return;
           
-          // No glow or shadow effects
-          this.ctx.shadowBlur = 0;
+          // Simplified color calculation for performance
+          const saturation = char.isActive ? 70 : 40;
+          const lightness = char.isActive ? 70 : 50;
           
-          this.ctx.fillStyle = `hsla(${hue}, ${saturation}%, ${lightness}%, ${combinedAlpha})`;
+          this.ctx.fillStyle = `hsla(${char.hue}, ${saturation}%, ${lightness}%, ${combinedAlpha})`;
           this.ctx.fillText(char.char, perspectiveX, perspectiveY);
         }
       });
