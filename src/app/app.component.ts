@@ -95,6 +95,40 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     '/', '*', '+', '-', '=', '^', '&', '%', '$', '#'
   ];
 
+  private readonly japaneseChars = [
+    '一', '二', '三', '四', '五', '六', '七', '八', '九', '十',
+    '人', '大', '小', '中', '上', '下', '左', '右', '前', '後',
+    '日', '月', '火', '水', '木', '金', '土', '年', '時', '分',
+    '山', '川', '海', '空', '風', '雨', '雪', '雲', '星', '光',
+    '心', '手', '目', '耳', '口', '足', '体', '頭', '顔', '声',
+    '家', '門', '窓', '道', '橋', '車', '電', '火', '水',
+    '食', '飲', '見', '聞', '話', '読', '書', '学', '教', '習',
+    '行', '来', '帰', '出', '入', '立', '座', '寝', '起', '歩',
+    '走', '飛', '泳', '歌', '踊', '笑', '泣', '怒', '喜', '悲',
+    '愛', '友', '親', '子', '兄', '姉', '弟', '妹', '夫', '妻',
+    '男', '女', '父', '母', '爺', '婆', '孫',
+    '赤', '青', '黄', '緑', '白', '黒', '茶', '紫',
+    '春', '夏', '秋', '冬', '朝', '昼', '夕', '夜', '今', '昔',
+    '新', '古', '高', '低', '長', '短', '広', '狭', '深', '浅',
+    '速', '遅', '早', '多', '少', '重', '軽', '強', '弱',
+    '美', '醜', '善', '悪', '正', '邪', '真', '偽', '明', '暗',
+    '始', '終', '開', '閉', '生', '死',
+    '和', '平', '戦', '争', '勝', '負', '得', '失', '成', '敗',
+    '力', '気', '神', '仏', '天', '地', '東', '西', '南', '北',
+    '花', '鳥', '魚', '虫', '木', '草', '石', '金', '銀', '銅',
+    '音', '色', '形', '味', '香', '触', '感', '思', '想', '夢',
+    '希', '望', '願', '祈', '信', '念', '志', '意', '情', '緒',
+    '楽', '苦', '辛', '甘', '酸', '辛', '熱', '冷', '温', '涼',
+    '静', '動', '安', '危', '平', '険', '易', '難', '簡', '複',
+    '直', '曲', '正', '斜', '横', '縦', '内', '外', '表', '裏',
+    '先', '後', '初', '終', '始', '末', '頭', '尾', '上', '下',
+    '前', '後', '左', '右', '中', '間', '近', '遠', '早', '遅',
+    '新', '旧', '古', '若', '老', '少', '多', '少', '大', '小',
+    '高', '低', '深', '浅', '長', '短', '広', '狭', '厚', '薄',
+    '重', '軽', '強', '弱', '硬', '軟', '固', '液', '気', '体',
+    '明', '暗', '光', '影', '白', '黒', '赤', '青', '黄', '緑'
+  ];
+
   private readonly meaningfulWords = [
     'DATA', 'FLOW', 'CODE', 'JSON', 'API', 'HTTP', 'SQL', 'CSS',
     'HTML', 'NODE', 'REACT', 'VUE', 'AJAX', 'REST', 'TCP', 'UDP',
@@ -200,7 +234,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private createDataColumns() {
     this.columns = [];
-    const baseColumnWidth = 35; // Much wider spacing for better performance
+    const baseColumnWidth = 50; // Much wider spacing to prevent overlap
     const columnsPerRow = Math.floor(this.canvas.width / baseColumnWidth);
     const totalColumns = columnsPerRow * 2; // Much fewer columns for maximum performance
     
@@ -212,23 +246,27 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       column.z = this.cameraZ + Math.random() * (this.maxDepth + this.regenerationBuffer);
       this.columns.push(column);
     }
+    
+    // Sort columns by x position to ensure proper spacing
+    this.columns.sort((a, b) => a.x - b.x);
   }
 
   private createColumn(x: number): DataColumn {
-    const charactersPerColumn = 35 + Math.floor(Math.random() * 20); // 35-55 characters (much longer columns)
+    const charactersPerColumn = 60 + Math.floor(Math.random() * 30); // 60-90 characters (optimized length)
     const characters = [];
     const now = Date.now();
     const startDelay = Math.random() * 2000; // Faster start
     
     for (let i = 0; i < charactersPerColumn; i++) {
-      // Calculate even distribution across full screen height with some randomness
-      const baseSpacing = this.canvas.height / charactersPerColumn;
-      const randomOffset = (Math.random() - 0.5) * baseSpacing * 0.3; // 30% randomness
-      const y = (i * baseSpacing) + randomOffset;
+      // Calculate distribution across extended height (much longer than screen)
+      const extendedHeight = this.canvas.height * 2.2; // 2.2x screen height for optimized columns
+      const baseSpacing = extendedHeight / charactersPerColumn;
+      const randomOffset = (Math.random() - 0.5) * baseSpacing * 0.2; // 20% randomness
+      const y = (i * baseSpacing) + randomOffset - (extendedHeight * 0.3); // Start above screen
       
       characters.push({
         char: this.getRandomChar(),
-        y: y, // Evenly distributed across full screen height
+        y: y, // Distributed across extended height, starting above screen
         alpha: Math.random() * 0.8 + 0.2, // Start with some visibility
         hue: Math.random() * 60 + 120,
         isActive: Math.random() < 0.25,
@@ -270,10 +308,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     
     // Regenerate all characters (simplified for performance)
     column.characters.forEach((char, index) => {
-      // Calculate even distribution across full screen height with some randomness
-      const baseSpacing = this.canvas.height / column.characters.length;
-      const randomOffset = (Math.random() - 0.5) * baseSpacing * 0.3; // 30% randomness
-      char.y = (index * baseSpacing) + randomOffset; // Evenly distributed across full screen height
+      // Calculate distribution across extended height (much longer than screen)
+      const extendedHeight = this.canvas.height * 2.2; // 2.2x screen height for optimized columns
+      const baseSpacing = extendedHeight / column.characters.length;
+      const randomOffset = (Math.random() - 0.5) * baseSpacing * 0.2; // 20% randomness
+      char.y = (index * baseSpacing) + randomOffset - (extendedHeight * 0.3); // Start above screen
       
       char.alpha = 0.4 + Math.random() * 0.4; // Simplified alpha
       char.hue = Math.random() * 60 + 120; // Green spectrum
@@ -295,7 +334,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getRandomChar(): string {
-    return this.dataChars[Math.floor(Math.random() * this.dataChars.length)];
+    // 30-50% chance for Japanese characters, 50-70% for regular data characters
+    const useJapanese = Math.random() < 0.4; // 40% chance for Japanese characters
+    
+    if (useJapanese) {
+      return this.japaneseChars[Math.floor(Math.random() * this.japaneseChars.length)];
+    } else {
+      return this.dataChars[Math.floor(Math.random() * this.dataChars.length)];
+    }
   }
 
   private getRandomWord(): string {
@@ -422,8 +468,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         
         // Reset character if it goes off screen - cycle back to top (simplified)
-        if (char.y > this.canvas.height + 50) {
-          char.y = -Math.random() * 100; // Start well above screen for better flow
+        if (char.y > this.canvas.height + 200) {
+          char.y = -Math.random() * 300; // Start well above screen for longer columns
           
           // Only reset word properties if this character is not part of a current word
           if (!char.isPartOfWord) {
@@ -457,7 +503,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       // Occasionally assign new words when current word goes off screen
       if (column.currentWord && column.wordStartIndex !== undefined) {
         const wordEndChar = column.characters[column.wordStartIndex + column.currentWord.length - 1];
-        if (wordEndChar && wordEndChar.y > this.canvas.height + 100) {
+        if (wordEndChar && wordEndChar.y > this.canvas.height + 200) {
           // Word has scrolled off screen, reset
           column.currentWord = undefined;
           column.wordStartIndex = undefined;
