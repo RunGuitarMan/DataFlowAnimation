@@ -111,7 +111,25 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     'DATABASE', 'TABLE', 'INDEX', 'QUERY', 'JOIN', 'WHERE',
     'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP',
     'CLOUD', 'AWS', 'AZURE', 'GCP', 'DOCKER', 'K8S', 'NGINX',
-    'REDIS', 'MONGO', 'MYSQL', 'POSTGRES', 'ELASTIC', 'KAFKA'
+    'REDIS', 'MONGO', 'MYSQL', 'POSTGRES', 'ELASTIC', 'KAFKA',
+    'MATRIX', 'NEO', 'AGENT', 'SMITH', 'MORPHEUS', 'TRINITY',
+    'CYPHER', 'TANK', 'MOUSE', 'APOC', 'SWITCH', 'KEYMAKER',
+    'ARCHITECT', 'ORACLE', 'SERAPH', 'MEROVINGIAN', 'PERSOPHONE',
+    'NIOBE', 'GHOST', 'TRAINMAN', 'RAMA', 'LINK', 'BANE',
+    'VIRUS', 'WORM', 'TROJAN', 'MALWARE', 'FIREWALL', 'ENCRYPT',
+    'DECRYPT', 'HASH', 'TOKEN', 'AUTH', 'JWT', 'OAUTH',
+    'SSL', 'TLS', 'HTTPS', 'DNS', 'IP', 'MAC', 'UUID',
+    'BASE64', 'HEX', 'BINARY', 'OCTAL', 'ASCII', 'UTF8',
+    'REGEX', 'PARSE', 'VALIDATE', 'SANITIZE', 'ESCAPE', 'ENCODE',
+    'DECODE', 'COMPRESS', 'DECOMPRESS', 'ARCHIVE', 'EXTRACT', 'MERGE',
+    'SPLIT', 'CONCAT', 'SUBSTRING', 'REPLACE', 'SEARCH', 'FIND',
+    'INDEX', 'SORT', 'FILTER', 'MAP', 'REDUCE', 'FOREACH',
+    'PROMISE', 'CALLBACK', 'EVENT', 'EMIT', 'LISTEN', 'BIND',
+    'CLONE', 'COPY', 'DEEP', 'SHALLOW', 'REFERENCE', 'VALUE',
+    'MUTABLE', 'IMMUTABLE', 'PURE', 'SIDE', 'EFFECT', 'STATE',
+    'PROPS', 'HOOKS', 'CONTEXT', 'PROVIDER', 'CONSUMER', 'REDUCER',
+    'ACTION', 'DISPATCH', 'STORE', 'SELECTOR', 'MIDDLEWARE', 'THUNK',
+    'SAGA', 'EPIC', 'OBSERVABLE', 'STREAM', 'SUBJECT', 'OPERATOR'
   ];
 
   constructor(private elementRef: ElementRef) {}
@@ -197,16 +215,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private createColumn(x: number): DataColumn {
-    const charactersPerColumn = 20 + Math.floor(Math.random() * 10); // 20-30 characters (optimized length)
+    const charactersPerColumn = 35 + Math.floor(Math.random() * 20); // 35-55 characters (much longer columns)
     const characters = [];
     const now = Date.now();
     const startDelay = Math.random() * 2000; // Faster start
     
     for (let i = 0; i < charactersPerColumn; i++) {
-      const irregularSpacing = 25 + Math.random() * 15; // 25-40px spacing for better spread
+      // Calculate even distribution across full screen height with some randomness
+      const baseSpacing = this.canvas.height / charactersPerColumn;
+      const randomOffset = (Math.random() - 0.5) * baseSpacing * 0.3; // 30% randomness
+      const y = (i * baseSpacing) + randomOffset;
+      
       characters.push({
         char: this.getRandomChar(),
-        y: Math.random() * this.canvas.height, // Distribute randomly across full screen height
+        y: y, // Evenly distributed across full screen height
         alpha: Math.random() * 0.8 + 0.2, // Start with some visibility
         hue: Math.random() * 60 + 120,
         isActive: Math.random() < 0.25,
@@ -226,11 +248,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       fontSize: 13 + Math.random() * 4 // More font size variation
     };
     
-    // Very rare chance to have a meaningful word (minimal for performance)
-    if (Math.random() < 0.02) {
+    // Moderate chance to have a meaningful word (balanced for performance)
+    if (Math.random() < 0.15) {
       setTimeout(() => {
         this.assignWordToColumn(column);
-      }, Math.random() * 8000); // Much longer delayed word assignment
+      }, Math.random() * 3000); // Reasonable delayed word assignment
     }
     
     return column;
@@ -247,23 +269,28 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     column.wordStartIndex = undefined;
     
     // Regenerate all characters (simplified for performance)
-    column.characters.forEach(char => {
-      char.y = Math.random() * this.canvas.height; // Full screen distribution
+    column.characters.forEach((char, index) => {
+      // Calculate even distribution across full screen height with some randomness
+      const baseSpacing = this.canvas.height / column.characters.length;
+      const randomOffset = (Math.random() - 0.5) * baseSpacing * 0.3; // 30% randomness
+      char.y = (index * baseSpacing) + randomOffset; // Evenly distributed across full screen height
+      
       char.alpha = 0.4 + Math.random() * 0.4; // Simplified alpha
       char.hue = Math.random() * 60 + 120; // Green spectrum
       char.isActive = Math.random() < 0.15; // Very few active for performance
       char.char = this.getRandomChar();
       char.lastChange = now + Math.random() * 3000; // Much longer stagger
       char.changeInterval = 3000 + Math.random() * 4000; // Very slow changes
+      // Always reset word properties during regeneration
       char.isPartOfWord = false;
       char.wordIndex = undefined;
     });
     
-    // Very rare chance for meaningful word (minimal for performance)
-    if (Math.random() < 0.01) {
+    // Moderate chance for meaningful word (balanced for performance)
+    if (Math.random() < 0.12) {
       setTimeout(() => {
         this.assignWordToColumn(column);
-      }, Math.random() * 6000);
+      }, Math.random() * 2000);
     }
   }
 
@@ -275,9 +302,47 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.meaningfulWords[Math.floor(Math.random() * this.meaningfulWords.length)];
   }
 
+  private hasWordInRange(column: DataColumn, startIndex: number, endIndex: number): boolean {
+    // Check if there's already a word in the specified range
+    for (let i = startIndex; i <= endIndex && i < column.characters.length; i++) {
+      if (column.characters[i].isPartOfWord) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private findSafeWordPosition(column: DataColumn, wordLength: number): number | null {
+    // Find a safe position for a new word that doesn't overlap with existing words
+    const maxAttempts = 10;
+    const minSpacing = 3; // Minimum characters between words
+    
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const startIndex = Math.floor(Math.random() * (column.characters.length - wordLength - 2));
+      const endIndex = startIndex + wordLength - 1;
+      
+      // Check if this position is safe (no existing word in range + spacing)
+      const safeStart = Math.max(0, startIndex - minSpacing);
+      const safeEnd = Math.min(column.characters.length - 1, endIndex + minSpacing);
+      
+      if (!this.hasWordInRange(column, safeStart, safeEnd)) {
+        return startIndex;
+      }
+    }
+    
+    return null; // No safe position found
+  }
+
   private assignWordToColumn(column: DataColumn) {
     const word = this.getRandomWord();
-    const startIndex = Math.floor(Math.random() * (column.characters.length - word.length - 2));
+    
+    // Find a safe position that doesn't overlap with existing words
+    const startIndex = this.findSafeWordPosition(column, word.length);
+    
+    // If no safe position found, don't assign the word
+    if (startIndex === null) {
+      return;
+    }
     
     column.currentWord = word;
     column.wordStartIndex = startIndex;
@@ -285,11 +350,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     for (let i = 0; i < word.length; i++) {
       const charIndex = startIndex + i;
       if (charIndex < column.characters.length) {
-        column.characters[charIndex].char = word[i];
-        column.characters[charIndex].isPartOfWord = true;
-        column.characters[charIndex].wordIndex = i;
-        column.characters[charIndex].isActive = true;
-        column.characters[charIndex].hue = 180 + Math.random() * 60; // Cyan-blue for words
+        const char = column.characters[charIndex];
+        char.char = word[i]; // Set the exact character from the word
+        char.isPartOfWord = true;
+        char.wordIndex = i;
+        char.isActive = true;
+        // More vibrant colors for words - cyan to bright green
+        char.hue = 160 + Math.random() * 80; // Cyan-green spectrum
+        // Reset change timer to prevent morphing
+        char.lastChange = Date.now();
+        char.changeInterval = 999999; // Very long interval to prevent morphing
       }
     }
   }
@@ -318,8 +388,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       column.characters.forEach((char, index) => {
         char.y += column.speed;
         
-        // Much slower color cycling for performance
-        if (now % 3 === 0) { // Only update every 3rd frame
+        // Much slower color cycling for performance (only for non-word characters)
+        if (now % 3 === 0 && !char.isPartOfWord) { // Only update every 3rd frame and only for non-words
           char.hue = (char.hue + 0.1) % 360;
         }
         
@@ -333,34 +403,51 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           if (Math.random() < 0.1) {
             char.isActive = !char.isActive;
           }
+        } else if (char.isPartOfWord) {
+          // Words don't morph - they stay stable for readability
+          // Keep the original character and prevent any changes
+          char.lastChange = now; // Reset timer to prevent morphing
+          char.isActive = true; // Words are always active
         }
         
         // Simplified alpha calculation for performance
         const screenPosition = char.y / this.canvas.height;
-        char.alpha = char.isActive ? 
-          Math.max(0.6, 1 - screenPosition * 0.4) : 
-          Math.max(0.3, (1 - screenPosition * 0.4) * 0.6);
+        if (char.isPartOfWord) {
+          // Words always have high visibility
+          char.alpha = Math.max(0.8, 1 - screenPosition * 0.2);
+        } else {
+          char.alpha = char.isActive ? 
+            Math.max(0.6, 1 - screenPosition * 0.4) : 
+            Math.max(0.3, (1 - screenPosition * 0.4) * 0.6);
+        }
         
         // Reset character if it goes off screen - cycle back to top (simplified)
         if (char.y > this.canvas.height + 50) {
-          char.y = -Math.random() * 50; // Start just above screen
+          char.y = -Math.random() * 100; // Start well above screen for better flow
           
-          // Reset word properties
-          char.isPartOfWord = false;
-          char.wordIndex = undefined;
-          
-          char.char = this.getRandomChar();
-          char.hue = Math.random() * 60 + 120; // Simplified hue calculation
-          char.isActive = Math.random() < 0.3; // Less active for performance
-          char.alpha = 0.5 + Math.random() * 0.3; // Simplified alpha
-          char.lastChange = now + Math.random() * 2000; // Longer stagger
-          char.changeInterval = 2000 + Math.random() * 3000; // Much slower intervals
+          // Only reset word properties if this character is not part of a current word
+          if (!char.isPartOfWord) {
+            // Reset only non-word characters
+            char.isPartOfWord = false;
+            char.wordIndex = undefined;
+            
+            char.char = this.getRandomChar();
+            char.hue = Math.random() * 60 + 120; // Simplified hue calculation
+            char.isActive = Math.random() < 0.3; // Less active for performance
+            char.alpha = 0.5 + Math.random() * 0.3; // Simplified alpha
+            char.lastChange = now + Math.random() * 2000; // Longer stagger
+            char.changeInterval = 2000 + Math.random() * 3000; // Much slower intervals
+          } else {
+            // For word characters, just reset position but keep all word properties
+            // The word will be handled by the word management logic
+          }
         }
       });
       
       // Very infrequent character activation for maximum performance
       if (now - column.lastUpdate > 5000 + Math.random() * 5000) { // Very slow activation changes
         const randomChar = column.characters[Math.floor(Math.random() * column.characters.length)];
+        // Don't change activation of characters that are part of words
         if (!randomChar.isPartOfWord && Math.random() < 0.3) { // Very selective activation
           randomChar.isActive = !randomChar.isActive;
         }
@@ -370,19 +457,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       // Occasionally assign new words when current word goes off screen
       if (column.currentWord && column.wordStartIndex !== undefined) {
         const wordEndChar = column.characters[column.wordStartIndex + column.currentWord.length - 1];
-        if (wordEndChar && wordEndChar.y > this.canvas.height + 50) {
+        if (wordEndChar && wordEndChar.y > this.canvas.height + 100) {
           // Word has scrolled off screen, reset
           column.currentWord = undefined;
           column.wordStartIndex = undefined;
           
-          // 5% chance to assign a new word (much less frequent)
-          if (Math.random() < 0.05) {
+          // 20% chance to assign a new word (more frequent)
+          if (Math.random() < 0.20) {
             this.assignWordToColumn(column);
           }
         }
       } else {
-        // No current word, very rare word assignment for performance
-        if (Math.random() < 0.005) { // Very rare for maximum performance
+        // No current word, moderate word assignment for meaningful data
+        if (Math.random() < 0.08) { // More frequent for meaningful data
           this.assignWordToColumn(column);
         }
       }
@@ -402,8 +489,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             column.characters.forEach(char => {
               const perspectiveY = (char.y - this.canvas.height / 2) * scale + this.canvas.height / 2;
               if (Math.abs(perspectiveY - this.mouse.y) < 120 * scale) {
-                char.isActive = true;
-                char.hue = (char.hue + 3) % 360; // Slower hue change
+                // Don't change word characters, only regular characters
+                if (!char.isPartOfWord) {
+                  char.isActive = true;
+                  char.hue = (char.hue + 3) % 360; // Slower hue change
+                }
               }
             });
           }
@@ -446,9 +536,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           // Skip if character is off screen
           if (perspectiveY < -30 || perspectiveY > this.canvas.height + 30) return;
           
-          // Simplified color calculation for performance
-          const saturation = char.isActive ? 70 : 40;
-          const lightness = char.isActive ? 70 : 50;
+          // Enhanced color calculation for words vs regular characters
+          let saturation, lightness;
+          if (char.isPartOfWord) {
+            // Words are more vibrant and noticeable
+            saturation = 90;
+            lightness = 80;
+          } else if (char.isActive) {
+            saturation = 70;
+            lightness = 70;
+          } else {
+            saturation = 40;
+            lightness = 50;
+          }
           
           this.ctx.fillStyle = `hsla(${char.hue}, ${saturation}%, ${lightness}%, ${combinedAlpha})`;
           this.ctx.fillText(char.char, perspectiveX, perspectiveY);
@@ -503,8 +603,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             column.characters.forEach(char => {
               const perspectiveY = (char.y - this.canvas.height / 2) * scale + this.canvas.height / 2;
               if (Math.abs(perspectiveY - y) < 150 * scale) {
-                char.isActive = true;
-                char.hue = Math.random() * 360; // Random rainbow color on click
+                // Don't change word characters, only regular characters
+                if (!char.isPartOfWord) {
+                  char.isActive = true;
+                  char.hue = Math.random() * 360; // Random rainbow color on click
+                }
               }
             });
           }
