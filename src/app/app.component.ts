@@ -190,8 +190,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     for (let i = 0; i < totalColumns; i++) {
       const x = (i % columnsPerRow) * baseColumnWidth + (baseColumnWidth / 2);
       const column = this.createColumn(x);
-      // Distribute columns evenly across the entire depth range including regeneration buffer
-      column.z = Math.random() * (this.maxDepth + this.regenerationBuffer);
+      // Distribute columns evenly ahead of camera for continuous flow
+      column.z = this.cameraZ + Math.random() * (this.maxDepth + this.regenerationBuffer);
       this.columns.push(column);
     }
   }
@@ -301,13 +301,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cameraZ += 2.5; // Steady forward movement
     
     this.columns.forEach(column => {
-      // Move column towards camera
-      column.z -= 3; // Slower column movement for better flow
+      // Move column towards camera at same speed as camera to maintain relative position
+      // This creates the illusion of infinite depth
+      column.z -= 2.5; // Same speed as camera movement
       
-      // Proper Matrix rain regeneration - move columns that pass camera far ahead
-      if (column.z < this.minDepth) {
-        // Move to far end of depth field with buffer distance for continuous flow
-        column.z = this.maxDepth + Math.random() * this.regenerationBuffer;
+      // Regenerate columns that pass behind camera to maintain infinite effect
+      if (column.z < this.cameraZ - 100) { // Move behind camera with some buffer
+        // Move to far ahead of camera for continuous flow
+        column.z = this.cameraZ + this.maxDepth + Math.random() * this.regenerationBuffer;
         
         // Regenerate the entire column for fresh appearance
         this.regenerateColumn(column);
@@ -395,7 +396,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       const perspective = 800;
       const distance = column.z - this.cameraZ;
       
-      if (distance > 0 && distance <= this.maxDepth) {
+      if (distance > 0 && distance <= this.maxDepth + this.regenerationBuffer) {
         const scale = perspective / distance;
         const perspectiveX = (column.x - this.canvas.width / 2) * scale + this.canvas.width / 2;
         
@@ -496,7 +497,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         const perspective = 800;
         const distance = column.z - this.cameraZ;
         
-        if (distance > 0 && distance <= this.maxDepth) {
+        if (distance > 0 && distance <= this.maxDepth + this.regenerationBuffer) {
           const scale = perspective / distance;
           const perspectiveX = (column.x - this.canvas.width / 2) * scale + this.canvas.width / 2;
           
